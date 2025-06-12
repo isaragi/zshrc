@@ -1,4 +1,20 @@
-rehash
+# for M1
+export PATH="/opt/homebrew/bin:$PATH"
+
+if type brew &>/dev/null; then
+  FPATH="$(brew --prefix)/share/zsh-completions:$FPATH"
+
+  autoload -Uz compinit
+  compinit
+fi
+export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
+export PATH="/opt/homebrew/opt/libxml2/bin:$PATH"
+
+# change for gem and ruby path
+[[ -d ~/.rbenv  ]] && \
+  export PATH="$HOME/.rbenv/bin:$PATH" && \
+  eval "$(rbenv init -)"
+
 eval "$(rbenv init -)"
 rbenv rehash
 
@@ -14,16 +30,15 @@ zstyle ':vcs_info:*' actionformats '[%b|%a]'
 precmd () { vcs_info }
 RPROMPT=$RPROMPT'${vcs_info_msg_0_}'
 
-
 fpath=(~/.zsh/completion $fpath)
 
 autoload -U compinit
 compinit -u
- 
+
 autoload -U colors
 colors
 zstyle ':completion:*' list-colors "${LS_COLORS}"
- 
+
 # 単語の入力途中でもTab補完を有効化
 setopt complete_in_word
 # 補完候補をハイライト
@@ -34,11 +49,10 @@ zstyle ':completion::complete:*' use-cache true
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # 補完リストの表示間隔を狭くする
 setopt list_packed
- 
+
 # コマンドの打ち間違いを指摘してくれる
 setopt correct
 SPROMPT="correct: $RED%R$DEFAULT -> $GREEN%r$DEFAULT ? [Yes/No/Abort/Edit] => "
-
 
 HISTFILE=~/.zsh_history
 HISTSIZE=10000000
@@ -49,7 +63,6 @@ SAVEHIST=10000000
 typeset -A key
 
 key[Home]=${terminfo[khome]}
-
 key[End]=${terminfo[kend]}
 key[Insert]=${terminfo[kich1]}
 key[Delete]=${terminfo[kdch1]}
@@ -61,26 +74,28 @@ key[PageUp]=${terminfo[kpp]}
 key[PageDown]=${terminfo[knp]}
 
 # setup key accordingly
-[[ -n "${key[Home]}"     ]]  && bindkey  "${key[Home]}"     beginning-of-line
-[[ -n "${key[End]}"      ]]  && bindkey  "${key[End]}"      end-of-line
-[[ -n "${key[Insert]}"   ]]  && bindkey  "${key[Insert]}"   overwrite-mode
-[[ -n "${key[Delete]}"   ]]  && bindkey  "${key[Delete]}"   delete-char
-[[ -n "${key[Up]}"       ]]  && bindkey  "${key[Up]}"       up-line-or-history
-[[ -n "${key[Down]}"     ]]  && bindkey  "${key[Down]}"     down-line-or-history
-[[ -n "${key[Left]}"     ]]  && bindkey  "${key[Left]}"     backward-char
-[[ -n "${key[Right]}"    ]]  && bindkey  "${key[Right]}"    forward-char
-[[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"   beginning-of-buffer-or-history
-[[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-buffer-or-history
+[[ -n "${key[Home]}"     ]] && bindkey "${key[Home]}" beginning-of-line
+[[ -n "${key[End]}"      ]] && bindkey "${key[End]}" end-of-line
+[[ -n "${key[Insert]}"   ]] && bindkey "${key[Insert]}" overwrite-mode
+[[ -n "${key[Delete]}"   ]] && bindkey "${key[Delete]}" delete-char
+[[ -n "${key[Up]}"       ]] && bindkey "${key[Up]}" up-line-or-history
+[[ -n "${key[Down]}"     ]] && bindkey "${key[Down]}" down-line-or-history
+[[ -n "${key[Left]}"     ]] && bindkey "${key[Left]}" backward-char
+[[ -n "${key[Right]}"    ]] && bindkey "${key[Right]}" forward-char
+[[ -n "${key[PageUp]}"   ]] && bindkey "${key[PageUp]}" beginning-of-buffer-or-history
+[[ -n "${key[PageDown]}" ]] && bindkey "${key[PageDown]}" end-of-buffer-or-history
 
-# Finally, make sure the terminal is in application mode, when zle is
-# active. Only then are the values from $terminfo valid.
+# Finally, make sure the terminal is in application mode, when zle is active.
+# Only then are the values from $terminfo valid.
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
-    function zle-line-init () {
-        printf '%s' "${terminfo[smkx]}"
-    }
-    function zle-line-finish () {
-        printf '%s' "${terminfo[rmkx]}"
-    }
-    zle -N zle-line-init
-    zle -N zle-line-finish
+  function zle-line-init () {
+    printf '%s' "${terminfo[smkx]}"
+  }
+  function zle-line-finish () {
+    printf '%s' "${terminfo[rmkx]}"
+  }
+  zle -N zle-line-init
+  zle -N zle-line-finish
 fi
+
+export JAVA_HOME=$(/usr/libexec/java_home)
